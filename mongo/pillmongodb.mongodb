@@ -1,0 +1,175 @@
+// Creating and switching into the database
+use booksDb;
+
+// Creating collections and schemas
+db.createCollection("authors", {
+  validator: { $jsonSchema: {
+    bsonType: "object",
+    required: ["name", "lastName", "country"],
+    properties: {
+      name: {
+        bsonType: "string",
+        description: "This must be a string and required",
+      },
+      lastName: {
+        bsonType: "string",
+        description: "This must be a string and required",
+      },
+      dateOfBirth: {
+        bsonType: "date",
+        description: "This must be a date and required",
+      },
+      dateOfDeath: {
+        bsonType: "date",
+        description: "This must be a date and required",
+      },
+      country: {
+        bsonType: "string",
+        description: "This must be a string and required",
+      },
+    }
+  }}
+});
+db.createCollection("books", {
+  validator: { $jsonSchema: {
+    bsonType: "object",
+    required: ["title", "releaseYear", "category"],
+    properties: {
+      title: {
+        bsonType: "string",
+        description: "This must be a string and required",
+      },
+      releaseYear: {
+        bsonType: "array",
+        minItems: 1,
+        uniqueItems: true,
+        additionalProperties: false,
+        items: {
+          bsonType: "date",
+          description: "This must be a date and required",
+        }
+      },
+      category: {
+        bsonType: "string",
+        description: "This must be a string and required",
+      },
+      authors: {
+        bsonType: "array",
+        minItems: 1,
+        uniqueItems: true,
+        additionalProperties: false,
+        items: {
+          bsonType: "object",
+          required: ["_id", "name", "lastName"],
+          properties: {
+            _id: {
+            },
+            name: {
+              bsonType: "string",
+              description: "This must be a string and required",
+            },
+            lastName: {
+              bsonType: "string",
+              description: "This must be a string and required",
+            },
+          }
+        }
+      }
+    }
+  }}
+});
+
+////////////////////////////////////////////////////////////////
+// INSERT DATA
+
+// Inserting 3 authors
+db.authors.insertMany([
+  {
+    name: "Federico",
+    lastName: "Garcia Lorca",
+    dateOfBirth: new Date("1898-07-05"),
+    dateOfDeath: new Date("1936-08-18"),
+    country: "Spain",
+  },
+    {
+    name: "Dan",
+    lastName: "Brown",
+    dateOfBirth: new Date("1964-06-22"),
+    country: "USA",
+  },
+  {
+    name: "Edgar Allan",
+    lastName: "Poe",
+    dateOfBirth: new Date("1809-01-19"),
+    dateOfDeath: new Date("1849-10-07"),
+    country: "USA",
+  },
+]);
+
+
+// Inserting 10 books
+db.books.insertMany([
+  {
+    title: "Bodas de sangre",
+    releaseYear: [new Date("1933-03-08").getFullYear()],
+    category: "Crime",
+    authors: [db.authors.findOne({name: "Federico"}, {id:1, name: 1, lastName: 1})],
+  },
+    {
+    title: "Romancero gitano",
+    releaseYear: [new Date("1928-07-21").getFullYear()],
+    category: "Poetry",
+    authors: [db.authors.findOne({name: "Federico"}, {id:1, name: 1, lastName: 1})],
+  },
+    {
+    title: "Poeta en Nueva York",
+    releaseYear: [new Date("1940-06-25").getFullYear()],
+    category: "Poetry",
+    authors: [db.authors.findOne({name: "Federico"}, {id:1, name: 1, lastName: 1})],
+  },
+  {
+    title: "Impresiones y paisajes",
+    releaseYear: [new Date("1918-02-06").getFullYear()],
+    category: "Prose",
+    authors: [db.authors.findOne({name: "Federico"}, {id:1, name: 1, lastName: 1})],
+  },
+  {
+    title: "Angels and Demons",
+    releaseYear: [new Date("2000-05-14").getFullYear()],
+    category: "Thriller",
+    authors: [db.authors.findOne({name: "Dan"}, {id:1, name: 1, lastName: 1})],
+  },
+  {
+    title: "The Da Vinci Code",
+    releaseYear: [new Date("2003-03-18").getFullYear()],
+    category: "Thriller",
+    authors: [db.authors.findOne({name: "Dan"}, {id:1, name: 1, lastName: 1})],
+  },
+  {
+    title: "Inferno",
+    releaseYear: [new Date("2017-05-14").getFullYear()],
+    category: "Thriller",
+    authors: [db.authors.findOne({name: "Dan"}, {id:1, name: 1, lastName: 1})],
+  },
+  {
+    title: "The black cat",
+    releaseYear: [new Date("1843-08-19").getFullYear()],
+    category: "Horror",
+    authors: [db.authors.findOne({name: "Edgar Allan"}, {id:1, name: 1, lastName: 1})],
+  },
+  {
+    title: "The oval portrait",
+    releaseYear: [new Date("1842-01-20").getFullYear()],
+    category: "Horror",
+    authors: [db.authors.findOne({name: "Edgar Allan"}, {id:1, name: 1, lastName: 1})],
+  },
+  {
+    title: "Eldorado",
+    releaseYear: [new Date("1849-04-21").getFullYear()],
+    category: "Poetry",
+    authors: [db.authors.findOne({name: "Edgar Allan"}, {id:1, name: 1, lastName: 1})],
+  },
+]
+);
+
+
